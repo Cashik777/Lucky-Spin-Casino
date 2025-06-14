@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lucky Spin Casino</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #0a0a0a;
+      color: gold;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+    header {
+      border-bottom: 2px solid gold;
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+    .game-container {
+      min-height: 200px;
+      margin: 30px 0;
+    }
+    .slot-reel {
+      display: inline-block;
+      font-size: 50px;
+      margin: 0 15px;
+      animation: spin 0.3s;
+    }
+    @keyframes spin {
+      from { transform: rotateY(0deg); }
+      to { transform: rotateY(360deg); }
+    }
+    .roulette-wheel {
+      font-size: 60px;
+      margin: 20px;
+      display: inline-block;
+    }
+    button {
+      background: gold;
+      color: #000;
+      border: none;
+      padding: 12px 25px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      margin: 10px;
+      transition: all 0.3s;
+    }
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px gold;
+    }
+    #balance {
+      font-weight: bold;
+      color: #fff;
+    }
+    footer {
+      margin-top: 50px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>LUCKY SPIN CASINO</h1>
+    <div>Баланс: <span id="balance">1000</span> ₽</div>
+  </header>
+
+  <main>
+    <div class="game-container">
+      <!-- Слоты -->
+      <div id="slots">
+        <div class="slot-reel">🍒</div>
+        <div class="slot-reel">🍋</div>
+        <div class="slot-reel">🍊</div>
+      </div>
+      <button onclick="spinSlots()">Крутить слоты (50 ₽)</button>
+
+      <!-- Рулетка -->
+      <div style="margin-top: 50px;">
+        <h2>Рулетка</h2>
+        <div class="roulette-wheel" id="roulette-wheel">🎰</div>
+        <button onclick="spinRoulette()">Ставка (100 ₽)</button>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2024 Lucky Spin. Только для лиц старше 18 лет</p>
+  </footer>
+
+  <script>
+    // Общий баланс
+    let balance = 1000;
+    const balanceEl = document.getElementById("balance");
+
+    // Слот-машина
+    const symbols = ["🍒", "🍋", "🍊", "7", "💰", "💎"];
+    function spinSlots() {
+      if (balance < 50) return alert("Недостаточно средств!");
+      balance -= 50;
+      updateBalance();
+
+      const reels = [
+        symbols[Math.floor(Math.random() * symbols.length)],
+        symbols[Math.floor(Math.random() * symbols.length)],
+        symbols[Math.floor(Math.random() * symbols.length)]
+      ];
+
+      // Анимация
+      const slotElements = document.querySelectorAll(".slot-reel");
+      slotElements.forEach((el, i) => {
+        el.textContent = "⌛";
+        setTimeout(() => {
+          el.textContent = reels[i];
+          el.style.animation = "none";
+          void el.offsetWidth; // Trigger reflow
+          el.style.animation = "spin 0.3s";
+        }, 300 * (i + 1));
+      });
+
+      // Проверка выигрыша
+      setTimeout(() => {
+        if (reels[0] === reels[1] && reels[1] === reels[2]) {
+          const win = 500;
+          balance += win;
+          alert(`🎉 Джекпот! +${win} ₽`);
+          updateBalance();
+        }
+      }, 1500);
+    }
+
+    // Рулетка
+    function spinRoulette() {
+      if (balance < 100) return alert("Недостаточно средств!");
+      balance -= 100;
+      updateBalance();
+
+      const wheel = document.getElementById("roulette-wheel");
+      wheel.textContent = "🔄";
+      wheel.style.animation = "spin 1s";
+      
+      setTimeout(() => {
+        const isWin = Math.random() > 0.5;
+        wheel.textContent = isWin ? "🎉 +200 ₽" : "💸 0 ₽";
+        wheel.style.animation = "none";
+        if (isWin) {
+          balance += 200;
+          updateBalance();
+        }
+      }, 1000);
+    }
+
+    function updateBalance() {
+      balanceEl.textContent = balance;
+    }
+  </script>
+</body>
+</html>
